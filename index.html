@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <title>D3 Grid</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.8/d3.min.js">
+  </script>
+</head>
+
+<body>
+  <svg class="container">
+  </svg>
+  <style>
+    svg {
+      height: 1000px;
+      width: 1000px;
+    }
+  </style>
+  <script>
+
+  var randomNumberGenerator = function() {
+    var points = [];
+
+    for (var i = 0; i < 100; i++) {
+        points[i] = {
+            "x": twoDP(Math.random()*100),
+            "y": twoDP(Math.random()*100)
+        };
+    }
+    return points;
+};
+
+//function to round points to 2dp
+var twoDP = function(n) {
+    return Math.floor(n * 100)/100;
+};
+
+//function that gives the numbered square the point is in
+var pointToSquareLocation = function(point) {
+    return Math.floor(point.y/10)*10 + Math.floor(point.x/10);
+};
+
+//function creating array numbered 0 -100
+var blankSquares = function(n) {
+    var emptySquares = []
+    for (var i = 0; i < n; i++) {
+        emptySquares.push(i)
+    }
+    return emptySquares
+}
+
+
+// function which creates object of 100 blank squares
+var emptyGrid =  blankSquares(100).reduce(function(accum, curr) {
+    accum[curr] = 1
+    return accum
+}, {});
+
+var pointsArray = randomNumberGenerator();
+var squares = pointsArray.map(pointToSquareLocation);
+
+var squareCountObj = function(gridObject, squareLocationArray) {
+
+    squareLocationArray.forEach(function(element){
+        if (gridObject[element]) {
+            gridObject[element] ++;
+        }
+    })
+   return gridObject
+}
+
+var finalObj = squareCountObj(emptyGrid, squares)
+
+//the function we had before that ignored the squares without points in
+
+// var squareCountObj = squares.reduce(function(accum, curr, index) {
+
+//     if (accum[curr]) {
+//         accum[curr] ++;
+//     } else {
+//         accum[curr] = 2;
+//     } return accum;
+// }, {});
+
+
+    var finalArray = [];
+
+    Object.keys(finalObj).forEach(function(element, index){
+        finalArray.push({
+            "id": element,
+            "opacity": finalObj[element]
+        });
+    });
+
+    var maxOpacity = finalArray.reduce(function(prev, curr){
+        return prev.opacity > curr.opacity ? prev : curr;
+    }).opacity;
+
+    var scaledOpacityArray = finalArray.map(function(obj) {
+         var scaledObj = {};
+        scaledObj.i = obj.id;
+        scaledObj.d = obj.opacity/maxOpacity;
+       return scaledObj;
+    });
+
+    var squarew = 100
+    // createData(99);
+    d3.select(".container").selectAll("rect")
+      .data(scaledOpacityArray)
+      .enter()
+      .append("rect")
+      .attr("class", "square")
+      .attr("height", squarew)
+      .attr("width", squarew)
+      .attr("fill", "red")
+      .attr("display", "in-line")
+      .attr("opacity", function(d) {
+        return "opacity", d.d;
+      })
+      .attr("x", function(d, i) {
+        return (i%10)*squarew;
+         })
+       .attr("y", function(d,i){
+         return Math.floor(i/10)*squarew;
+       });
+  </script>
+</body>
+
+</html>
