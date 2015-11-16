@@ -32,71 +32,70 @@ var pointToSquareLocation = function(point) {
 
 //function creating array numbered 0 - n
 var blankSquares = function(n) {
-    var emptySquares = []
+    var emptySquares = [];
     for (var i = 0; i < n; i++) {
-        emptySquares.push(i)
+        emptySquares.push(i);
     }
-    return emptySquares
+    return emptySquares;
 };
 
 // function which creates object of 100 blank squares
 var emptyGrid =  blankSquares(scaleX * scaleY).reduce(function(accum, curr) {
     accum[curr] = 0;
-    return accum
+    return accum;
 }, {});
 
-var pointsArray = randomNumberGenerator(dataPoints,maxX,maxY);
-var squares = pointsArray.map(pointToSquareLocation);
-
 var squareCountObj = function(gridObject, squareLocationArray) {
-
     squareLocationArray.forEach(function(element){
             gridObject[element] ++;
-    })
-   return gridObject
-}
+    });
+   return gridObject;
+};
 
-var finalObj = squareCountObj(emptyGrid, squares)
+Object.keys(finalObj).forEach(function(element, index){
+    finalArray.push({
+        "id": element,
+        "opacity": finalObj[element]
+    });
+});
 
+
+//implementation
+var pointsArray = randomNumberGenerator(dataPoints,maxX,maxY);
+var squares = pointsArray.map(pointToSquareLocation);
+var finalObj = squareCountObj(emptyGrid, squares);
 var finalArray = [];
 
-    Object.keys(finalObj).forEach(function(element, index){
-        finalArray.push({
-            "id": element,
-            "opacity": finalObj[element]
-        });
-    });
 
-    var maxOpacity = finalArray.reduce(function(prev, curr){
-        return prev.opacity > curr.opacity ? prev : curr;
-    }).opacity;
+var maxOpacity = finalArray.reduce(function(prev, curr){
+    return prev.opacity > curr.opacity ? prev : curr;
+  }).opacity;
 
-    var scaledOpacityArray = finalArray.map(function(obj) {
-         var scaledObj = {};
-        scaledObj.i = obj.id;
-        scaledObj.d = obj.opacity/maxOpacity;
-       return scaledObj;
-    });
+var scaledOpacityArray = finalArray.map(function(obj) {
+      var scaledObj = {};
+      scaledObj.i = obj.id;
+      scaledObj.d = obj.opacity/maxOpacity;
+      return scaledObj;
+  });
 
-    console.log(scaledOpacityArray);
+var squarew =20;
 
-    var squarew =20
-    // createData(99);
-    d3.select(".container").selectAll("rect")
-      .data(scaledOpacityArray)
-      .enter()
-      .append("rect")
-      .attr("class", "square")
-      .attr("height", squarew)
-      .attr("width", squarew)
-      .attr("fill", "red")
-      .attr("display", "in-line")
-      .attr("opacity", function(d) {
-        return "opacity", d.d;
-      })
-      .attr("x", function(d, i) {
-        return (i%scaleY)*squarew;
-         })
-       .attr("y", function(d,i){
-         return Math.floor(i/scaleX)*squarew;
-       });
+// Visualisation function - createData(99);
+d3.select(".container").selectAll("rect")
+  .data(scaledOpacityArray)
+  .enter()
+  .append("rect")
+  .attr("class", "square")
+  .attr("height", squarew)
+  .attr("width", squarew)
+  .attr("fill", "red")
+  .attr("display", "in-line")
+  .attr("opacity", function(d) {
+    return "opacity", d.d;
+  })
+  .attr("x", function(d, i) {
+    return (i%scaleY)*squarew;
+     })
+   .attr("y", function(d,i){
+     return Math.floor(i/scaleX)*squarew;
+   });
