@@ -52,19 +52,19 @@ var squareCountObj = function(gridObject, squareLocationArray) {
    return gridObject;
 };
 
-Object.keys(finalObj).forEach(function(element, index){
-    finalArray.push({
-        "id": element,
-        "opacity": finalObj[element]
-    });
-});
-
 
 //implementation
 var pointsArray = randomNumberGenerator(dataPoints,maxX,maxY);
 var squares = pointsArray.map(pointToSquareLocation);
 var finalObj = squareCountObj(emptyGrid, squares);
 var finalArray = [];
+
+Object.keys(finalObj).forEach(function(element, index){
+    finalArray.push({
+        "id": element,
+        "opacity": finalObj[element]
+    });
+});
 
 
 var maxOpacity = finalArray.reduce(function(prev, curr){
