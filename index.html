@@ -6,26 +6,40 @@
   <title>D3 Grid</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.8/d3.min.js">
   </script>
-</head>
-
-<body>
-  <svg class="container">
-  </svg>
   <style>
+    body, html {
+      height:100%;
+      width:100%;
+      margin, padding: 0;
+    }
     svg {
       height: 1000px;
       width: 1000px;
     }
   </style>
+</head>
+
+<body>
+  <svg class="container">
+  </svg>
   <script>
 
-  var randomNumberGenerator = function() {
+  // VARIABLES
+  // Number of data points
+  var dataPoints = 100;
+  // range of data - maximum X value vs maximum Y value (scale)
+  var maxX = 5000, maxY = 1000;
+  // number of squares per X and per Y
+  var scaleX = 20, scaleY = 10;
+
+  // generates an array of 100 objects {x, y} (random numbers, each between 0 and 100)
+  var randomNumberGenerator = function(dataPoints, maxX, maxY) {
     var points = [];
 
-    for (var i = 0; i < 100; i++) {
+    for (var i = 0; i < dataPoints; i++) {
         points[i] = {
-            "x": twoDP(Math.random()*100),
-            "y": twoDP(Math.random()*100)
+            "x": twoDP(Math.random()*maxX),
+            "y": twoDP(Math.random()*maxY)
         };
     }
     return points;
@@ -38,51 +52,36 @@ var twoDP = function(n) {
 
 //function that gives the numbered square the point is in
 var pointToSquareLocation = function(point) {
-    return Math.floor(point.y/10)*10 + Math.floor(point.x/10);
+    return Math.floor(point.y/maxY*10)*10 + Math.floor(point.x/maxX*10);
 };
 
-//function creating array numbered 0 -100
+//function creating array numbered 0 - n
 var blankSquares = function(n) {
     var emptySquares = []
     for (var i = 0; i < n; i++) {
         emptySquares.push(i)
     }
     return emptySquares
-}
-
+};
 
 // function which creates object of 100 blank squares
-var emptyGrid =  blankSquares(100).reduce(function(accum, curr) {
-    accum[curr] = 1
+var emptyGrid =  blankSquares(scaleX * scaleY).reduce(function(accum, curr) {
+    accum[curr] = 0;
     return accum
 }, {});
 
-var pointsArray = randomNumberGenerator();
+var pointsArray = randomNumberGenerator(dataPoints,maxX,maxY);
 var squares = pointsArray.map(pointToSquareLocation);
 
 var squareCountObj = function(gridObject, squareLocationArray) {
 
     squareLocationArray.forEach(function(element){
-        if (gridObject[element]) {
             gridObject[element] ++;
-        }
     })
    return gridObject
 }
 
 var finalObj = squareCountObj(emptyGrid, squares)
-
-//the function we had before that ignored the squares without points in
-
-// var squareCountObj = squares.reduce(function(accum, curr, index) {
-
-//     if (accum[curr]) {
-//         accum[curr] ++;
-//     } else {
-//         accum[curr] = 2;
-//     } return accum;
-// }, {});
-
 
     var finalArray = [];
 
@@ -104,7 +103,9 @@ var finalObj = squareCountObj(emptyGrid, squares)
        return scaledObj;
     });
 
-    var squarew = 100
+    console.log(scaledOpacityArray);
+
+    var squarew =20
     // createData(99);
     d3.select(".container").selectAll("rect")
       .data(scaledOpacityArray)
@@ -119,10 +120,10 @@ var finalObj = squareCountObj(emptyGrid, squares)
         return "opacity", d.d;
       })
       .attr("x", function(d, i) {
-        return (i%10)*squarew;
+        return (i%scaleY)*squarew;
          })
        .attr("y", function(d,i){
-         return Math.floor(i/10)*squarew;
+         return Math.floor(i/scaleX)*squarew;
        });
   </script>
 </body>
